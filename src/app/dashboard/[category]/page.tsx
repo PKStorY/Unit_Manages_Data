@@ -18,13 +18,14 @@ interface CategoryConfig {
   fields: {
     name: string;
     label: string;
-    type: 'text' | 'number' | 'date' | 'select' | 'textarea' | 'file';
+    type: 'text' | 'number' | 'date' | 'select' | 'textarea' | 'file' | 'radio';
     placeholder?: string;
     options?: { value: string; label: string }[];
     required?: boolean;
     conditional?: { field: string; showIf: string };
     pattern?: string;
     title?: string;
+    hideLabel?: boolean;
   }[];
   columns: { key: string; label: string; format?: (val: any) => string }[];
 }
@@ -300,11 +301,12 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
         { 
           name: 'case_type', 
           label: 'ข้อพิพาท', 
-          type: 'select', 
+          type: 'radio', 
           required: true, 
+          hideLabel: true,
           options: [
-            { value: 'ทางแพ่ง', label: 'ทางแพ่ง' },
-            { value: 'ทางอาญา', label: 'ทางอาญา' }
+            { value: 'ทางแพ่ง', label: 'ข้อพิพาททางแพ่ง' },
+            { value: 'ทางอาญา', label: 'ข้อพิพาททางอาญา' }
           ] 
         },
         { 
@@ -371,8 +373,9 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
         { 
           name: 'case_final', 
           label: 'ผลการไกล่เกลี่ย', 
-          type: 'select', 
+          type: 'radio', 
           required: true, 
+          hideLabel: true,
           options: [
             { value: 'จำหน่าย', label: 'จำหน่าย' },
             { value: 'ยุติ', label: 'ยุติ' },
@@ -992,21 +995,7 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
                 <div className="bg-gradient-to-br from-slate-900 to-indigo-950/40 border border-indigo-500/20 rounded-2xl p-4 space-y-3 relative overflow-hidden shadow-lg shadow-indigo-950/5">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-xl pointer-events-none" />
                   
-                  <div className="flex items-center justify-between border-b border-slate-800/60 pb-2">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-indigo-400 animate-pulse" />
-                      <span className="font-semibold text-slate-200 text-xs">ผู้ช่วยกรอกข้อมูลอัจฉริยะด้วย AI</span>
-                    </div>
-                    <span className="text-[9px] text-indigo-400 font-medium px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/10">
-                      Gemini 1.5 Flash
-                    </span>
-                  </div>
-
                   <div className="space-y-3">
-                    <p className="text-[10px] text-slate-400 leading-4">
-                      กดปุ่มไมค์ขนาดใหญ่เพื่อเริ่มพูดเล่ารายละเอียดทั้งหมดทีเดียว (สคริปต์) หรือพิมพ์ข้อความ จากนั้นคลิกปุ่ม AI เพื่อแยกแยะกรอกฟอร์มแบบอัตโนมัติ
-                    </p>
-
                     <div className="flex flex-col items-center justify-center p-4 bg-slate-950/40 rounded-xl border border-slate-800/80 space-y-2 relative overflow-hidden">
                       {isListening ? (
                         <button
@@ -1034,11 +1023,11 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
                       </span>
 
                       <textarea
-                        rows={2}
+                        rows={5}
                         placeholder="ข้อความที่ถอดความได้ จะปรากฏตรงนี้ และคุณสามารถพิมพ์แก้ไขเพิ่มเติมได้..."
                         value={aiStoryText}
                         onChange={(e) => setAiStoryText(e.target.value)}
-                        className="w-full bg-slate-950 border border-slate-800/80 rounded-xl py-2 px-3 text-[10px] text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all resize-none min-h-[50px] mt-1"
+                        className="w-full bg-slate-950 border border-slate-800/80 rounded-xl py-2 px-3 text-[10px] text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all resize-y min-h-[120px] mt-1"
                       />
                     </div>
 
@@ -1072,9 +1061,11 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
 
                 return (
                   <div key={field.name} className="space-y-1.5">
-                    <label className="block text-slate-400 font-medium">
-                      {field.label} {field.required && <span className="text-red-500">*</span>}
-                    </label>
+                    {!field.hideLabel && (
+                      <label className="block text-slate-400 font-medium">
+                        {field.label} {field.required && <span className="text-red-500">*</span>}
+                      </label>
+                    )}
 
                     {field.type === 'text' && (
                       <div className="relative flex items-center">
@@ -1182,6 +1173,25 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
                         >
                           {activeVoiceField === field.name ? <MicOff className="h-3.5 w-3.5" /> : <Mic className="h-3.5 w-3.5" />}
                         </button>
+                      </div>
+                    )}
+
+                    {field.type === 'radio' && field.options && (
+                      <div className="flex flex-wrap gap-4 items-center py-1">
+                        {field.options.map(opt => (
+                          <label key={opt.value} className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer hover:text-white select-none">
+                            <input
+                              type="radio"
+                              name={field.name}
+                              value={opt.value}
+                              checked={formData[field.name] === opt.value}
+                              onChange={() => setFormData((prev: any) => ({ ...prev, [field.name]: opt.value }))}
+                              className="w-4 h-4 border border-slate-800 rounded-full text-indigo-600 bg-slate-950 focus:ring-indigo-500 focus:ring-offset-slate-950 focus:outline-none transition-all cursor-pointer accent-indigo-500"
+                              required={field.required}
+                            />
+                            <span>{opt.label}</span>
+                          </label>
+                        ))}
                       </div>
                     )}
 

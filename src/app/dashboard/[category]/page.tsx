@@ -285,30 +285,6 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
         { key: 'reporter_name', label: 'ผู้บันทึก' },
       ]
     },
-    budgets: {
-      title: 'การเบิกจ่ายงบประมาณ',
-      table: 'budgets',
-      idField: 'id',
-      fields: [
-        { name: 'project_name', label: 'ชื่อโครงการ/รายการเบิกจ่าย', type: 'text', required: true, placeholder: 'เช่น งบดำเนินงานประจำไตรมาสที่ 2' },
-        { name: 'approval_date', label: 'วันที่อนุมัติเบิกจ่าย', type: 'date', required: true },
-        { name: 'budget_amount', label: 'จำนวนงบประมาณได้รับอนุมัติ (บาท)', type: 'number', required: true },
-        { name: 'end_date', label: 'วันที่เสร็จสิ้นโครงการ', type: 'date' },
-        { name: 'refund_amount', label: 'จำนวนเงินงบประมาณส่งคืน (บาท)', type: 'number' },
-        { name: 'summary', label: 'สรุปการเบิกจ่ายและการทำงาน', type: 'textarea' },
-        { name: 'file_link', label: 'เอกสารเบิกจ่ายแนบ', type: 'file' },
-        { name: 'reporter_name', label: 'ชื่อผู้บันทึก', type: 'text', required: true },
-        { name: 'reporter_phone', label: 'เบอร์ติดต่อผู้บันทึก', type: 'text' },
-        { name: 'source_info', label: 'ชื่อผู้ประสานงาน', type: 'text' },
-        { name: 'source_contact', label: 'เบอร์ติดต่อผู้ประสานงาน', type: 'text' },
-      ],
-      columns: [
-        { key: 'project_name', label: 'โครงการ' },
-        { key: 'approval_date', label: 'วันที่อนุมัติ', format: (val) => new Date(val).toLocaleDateString('th-TH') },
-        { key: 'budget_amount', label: 'งบประมาณได้รับ', format: (val) => `${parseFloat(val).toLocaleString()} บาท` },
-        { key: 'reporter_name', label: 'ผู้บันทึก' },
-      ]
-    },
     ems_reports: {
       title: 'รายงานข้อพิพาทไกล่เกลี่ย พ.ร.บ. 2562',
       table: 'ems_reports',

@@ -111,11 +111,12 @@ export default function PlansPage() {
   // Load profile default values when user profile is loaded
   useEffect(() => {
     if (profile && !editingId && modalOpen) {
-      setFormData((prev: any) => ({
-        ...prev,
-        reporter_name: profile.name || '',
-        reporter_phone: profile.phone || '',
-      }));
+      setFormData((prev: any) => {
+        const updated = { ...prev };
+        if (!updated.reporter_name) updated.reporter_name = profile.name || '';
+        if (!updated.reporter_phone) updated.reporter_phone = profile.phone || '';
+        return updated;
+      });
     }
   }, [profile, modalOpen, editingId]);
 

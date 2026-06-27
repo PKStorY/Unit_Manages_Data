@@ -91,6 +91,56 @@ export default function LoginPage() {
     }
   };
 
+  const handleBypassLogin = async () => {
+    setAuthLoading(true);
+    setErrorMsg('');
+
+    try {
+      const response = await fetch('/api/auth/bypass', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'เกิดข้อผิดพลาดในการบายพาสระบบล็อกอิน');
+      }
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: result.email,
+        password: result.password,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data.user) {
+        Swal.fire({
+          icon: 'success',
+          title: 'เข้าสู่ระบบสำเร็จ (Bypass)',
+          text: 'เข้าสู่ระบบในฐานะผู้ดูแลระบบเพื่อความสะดวกในการจัดการ',
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        router.replace('/dashboard');
+      }
+    } catch (err: any) {
+      console.error(err);
+      setErrorMsg(err.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อระบบ Bypass');
+      Swal.fire({
+        icon: 'error',
+        title: 'ไม่สามารถเปิดระบบบายพาสได้',
+        text: err.message || 'กรุณาตรวจสอบการตั้งค่าหลังบ้าน หรือคีย์สิทธิ์แอดมิน',
+        confirmButtonText: 'ตกลง',
+        confirmButtonColor: '#6366f1'
+      });
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center bg-slate-950 text-white min-h-screen">
@@ -179,6 +229,20 @@ export default function LoginPage() {
             ) : (
               <span>เข้าสู่ระบบ</span>
             )}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleBypassLogin}
+            disabled={authLoading}
+            className="w-full bg-slate-950/45 hover:bg-slate-900 border border-slate-800/80 hover:border-indigo-500/50 text-slate-300 hover:text-white font-medium py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 text-sm mt-3"
+          >
+            {authLoading ? (
+              <Loader2 className="animate-spin h-5 w-5" />
+            ) : (
+              <Shield className="h-4 w-4 text-indigo-400" />
+            )}
+            <span>เข้าสู่ระบบด่วน (Admin Bypass)</span>
           </button>
         </form>
       </div>

@@ -11,7 +11,7 @@ import {
 import { 
   Calendar, FileText, Compass, BookOpen, Wallet, Shield, AlertTriangle, 
   CheckCircle, Clock, Search, ChevronRight, Filter, TrendingUp, Info,
-  Mic, MicOff, Sparkles, Loader2, X
+  Mic, MicOff, Sparkles, Loader2, X, Printer
 } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
@@ -59,6 +59,219 @@ export default function DashboardPage() {
   const [aiParsing, setAiParsing] = useState(false);
   const [scriptsModalOpen, setScriptsModalOpen] = useState(false);
   const [activeScriptTab, setActiveScriptTab] = useState('justice_fund');
+
+  const handlePrintWorksheet = () => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>ใบงานร่างสคริปต์คำพูดสำหรับรายงานด้วยเสียง (AI Voice Dictation Worksheet)</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap');
+            body {
+              font-family: 'Sarabun', sans-serif;
+              padding: 30px;
+              color: #1e293b;
+              line-height: 2.2;
+              font-size: 13px;
+              background-color: #fff;
+            }
+            @page {
+              size: A4;
+              margin: 15mm 15mm 15mm 15mm;
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 25px;
+              border-bottom: 2px solid #334155;
+              padding-bottom: 15px;
+            }
+            .header h1 {
+              font-size: 18px;
+              font-weight: 700;
+              margin: 0 0 5px 0;
+              color: #0f172a;
+            }
+            .header p {
+              font-size: 11px;
+              margin: 0;
+              color: #475569;
+            }
+            .instructions {
+              background-color: #f8fafc;
+              border: 1px solid #e2e8f0;
+              padding: 12px 15px;
+              border-radius: 8px;
+              margin-bottom: 25px;
+              font-size: 11.5px;
+              color: #334155;
+              line-height: 1.6;
+            }
+            .module-card {
+              border: 1px solid #cbd5e1;
+              border-radius: 8px;
+              padding: 15px;
+              margin-bottom: 20px;
+              page-break-inside: avoid;
+            }
+            .module-title {
+              font-size: 13px;
+              font-weight: 700;
+              color: #0f172a;
+              border-bottom: 1px dashed #cbd5e1;
+              padding-bottom: 6px;
+              margin-bottom: 10px;
+              display: flex;
+              justify-content: space-between;
+            }
+            .module-title span.tag {
+              font-size: 10px;
+              font-weight: 500;
+              background-color: #f1f5f9;
+              padding: 2px 8px;
+              border-radius: 4px;
+              color: #475569;
+            }
+            .script-content {
+              font-size: 12px;
+              color: #334155;
+              text-align: justify;
+              line-height: 2.3;
+            }
+            .fill-line {
+              display: inline-block;
+              border-bottom: 1.5px dotted #334155;
+              min-width: 140px;
+              height: 18px;
+              margin: 0 4px;
+              vertical-align: bottom;
+            }
+            .w-long { min-width: 280px; }
+            .w-short { min-width: 70px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>ใบงานร่างสคริปต์คำพูดสำหรับนำเข้าข้อมูลด้วยเสียง (AI Voice Dictation Worksheet)</h1>
+            <p>ศูนย์ไกล่เกลี่ยข้อพิพาทภาคประชาชน • สำหรับกรอกข้อมูลเขียนด้วยปากกาก่อนอ่านเสียงบันทึกเข้าระบบ</p>
+          </div>
+
+          <div class="instructions">
+            <strong>📝 คำชี้แจงการใช้งาน:</strong> ให้ผู้รายงานใช้ปากกาเขียนกรอกข้อมูลข้อความรายละเอียดโครงการหรือผลคดีลงในช่องว่างที่เป็นเส้นไข่ปลา <span style="border-bottom: 1.5px dotted #334155; padding-left: 20px; padding-right: 20px;">&nbsp;</span> ให้ครบถ้วนเสียก่อน เมื่อจะบันทึกเข้าระบบ ให้กดปุ่ม <strong>"บันทึกเสียงพูด"</strong> บนเบราว์เซอร์ แล้วอ่านออกเสียงรายละเอียดตามบทสคริปต์ที่ท่านเขียนร่างไว้ ระบบ AI จะช่วยแปลงคำพูดและนำเข้าสู่ฟิลด์ในแบบฟอร์มการรายงานทั้งหมดให้อัตโนมัติ
+          </div>
+
+          <!-- 1. กองทุนยุติธรรม -->
+          <div class="module-card">
+            <div class="module-title">
+              <span>1. แบบคำขอรับความช่วยเหลือเงินกองทุนยุติธรรม (กทย.4)</span>
+              <span class="tag">งบกองทุนยุติธรรม</span>
+            </div>
+            <div class="script-content">
+              "เสนอโครงการ <span class="fill-line w-long"></span> เสนอโดยประธานศูนย์ไกล่เกลี่ย <span class="fill-line"></span> สำนักงานตั้งอยู่ที่เลขที่ <span class="fill-line w-long"></span> มีผู้ประสานงานหลักคือ <span class="fill-line"></span> โทรศัพท์ติดต่อ <span class="fill-line"></span> อีเมล <span class="fill-line"></span> วัตถุประสงค์เพื่อส่งเสริมความรู้กฎหมายแก่ประชาชนในพื้นที่ จัดอบรมในวันที่ <span class="fill-line"></span> ถึงวันที่ <span class="fill-line"></span> ดำเนินการจัดประชุมเห็นชอบของคณะทำงานเสร็จสิ้นเมื่อวันที่ <span class="fill-line"></span>"
+            </div>
+          </div>
+
+          <!-- 2. ของบประมาณอื่นๆ -->
+          <div class="module-card">
+            <div class="module-title">
+              <span>2. คำเสนอขอและรายงานการใช้จ่ายงบประมาณทั่วไป</span>
+              <span class="tag">งบประมาณทั่วไป</span>
+            </div>
+            <div class="script-content">
+              "ขอเบิกจ่ายงบประมาณโครงการ <span class="fill-line w-long"></span> ได้รับงบประมาณอนุมัติจำนวน <span class="fill-line"></span> บาท วันที่ได้รับการอนุมัติเบิกจ่ายคือวันที่ <span class="fill-line"></span> จัดโครงการเสร็จสิ้นในวันที่ <span class="fill-line"></span> มีเงินงบประมาณคงเหลือส่งคืนคลังจำนวน <span class="fill-line"></span> บาท บันทึกรายงานโดย <span class="fill-line"></span> โทรศัพท์ติดต่อ <span class="fill-line"></span>"
+            </div>
+          </div>
+
+          <!-- 3. การประชุมคณะทำงาน -->
+          <div class="module-card">
+            <div class="module-title">
+              <span>3. รายงานการประชุมคณะทำงานของศูนย์ประจำตำบล</span>
+              <span class="tag">การประชุม</span>
+            </div>
+            <div class="script-content">
+              "จัดประชุมคณะทำงานศูนย์ไกล่เกลี่ยข้อพิพาทประจำตำบลดินแดง ครั้งที่ <span class="fill-line w-short"></span> ในวันที่ <span class="fill-line"></span> ณ <span class="fill-line"></span> มีมติที่ประชุมเห็นชอบในเรื่องการ <span class="fill-line w-long"></span> บันทึกรายงานโดย <span class="fill-line"></span> โทรศัพท์ติดต่อ <span class="fill-line"></span>"
+            </div>
+          </div>
+
+          <!-- 4. แผนการดำเนินงาน -->
+          <div class="module-card">
+            <div class="module-title">
+              <span>4. แผนการดำเนินงานและแผนงานโครงการประจำปี</span>
+              <span class="tag">แผนงานประจำปี</span>
+            </div>
+            <div class="script-content">
+              "บันทึกแผนงานโครงการหลักชื่อโครงการ <span class="fill-line w-long"></span> ปีงบประมาณ <span class="fill-line w-short"></span> บันทึกโดย <span class="fill-line"></span> โทร <span class="fill-line"></span> มีกิจกรรมย่อยคือ กิจกรรม <span class="fill-line"></span> เริ่มวันที่ <span class="fill-line"></span> ถึงวันที่ <span class="fill-line"></span> งบประมาณย่อยจำนวน <span class="fill-line"></span> บาท"
+            </div>
+          </div>
+
+          <!-- 5. รายงานผลกิจกรรม -->
+          <div class="module-card">
+            <div class="module-title">
+              <span>5. รายงานผลสำเร็จการดำเนินกิจกรรมลงพื้นที่ในชุมชน</span>
+              <span class="tag">ผลดำเนินกิจกรรม</span>
+            </div>
+            <div class="script-content">
+              "รายงานผลการจัดกิจกรรมชื่อ <span class="fill-line w-long"></span> จัดขึ้นในวันที่ <span class="fill-line"></span> ณ <span class="fill-line"></span> มีผู้เข้าร่วมกิจกรรมรวม <span class="fill-line w-short"></span> คน ผลงานสำเร็จคือ <span class="fill-line w-long"></span> บันทึกรายงานข้อมูลโดย <span class="fill-line"></span>"
+            </div>
+          </div>
+
+          <!-- 6. รายงานการอบรมสัมมนา -->
+          <div class="module-card">
+            <div class="module-title">
+              <span>6. รายงานการเข้าร่วมฝึกอบรมสัมมนาความรู้ด้านกฎหมาย</span>
+              <span class="tag">การอบรมศึกษา</span>
+            </div>
+            <div class="script-content">
+              "รายงานการเข้าร่วมอบรมในรูปแบบ <span class="fill-line w-short"></span> หลักสูตร <span class="fill-line w-long"></span> จัดขึ้นในวันที่ <span class="fill-line"></span> ผู้เข้ารับการอบรมคือ <span class="fill-line"></span> จัดโดยหน่วยงาน <span class="fill-line"></span> ได้รับความรู้หัวข้อหลักคือ <span class="fill-line w-long"></span> บันทึกโดย <span class="fill-line"></span>"
+            </div>
+          </div>
+
+          <!-- 7. ไกล่เกลี่ย พ.ร.บ. 2562 -->
+          <div class="module-card">
+            <div class="module-title">
+              <span>7. รายงานผลการไกล่เกลี่ยข้อพิพาทตาม พ.ร.บ. ไกล่เกลี่ย 2562</span>
+              <span class="tag">ไกล่เกลี่ย พ.ร.บ.</span>
+            </div>
+            <div class="script-content">
+              "รายงานการไกล่เกลี่ยคดีข้อพิพาทเลขคำร้องที่ <span class="fill-line"></span> วันที่รับคำร้องคือวันที่ <span class="fill-line"></span> เป็นข้อพิพาทประเภทคดี <span class="fill-line"></span> ทุนทรัพย์ไกล่เกลี่ยจำนวน <span class="fill-line"></span> บาท ผลการเจรจาคือ <span class="fill-line"></span> ไกล่เกลี่ยสำเร็จวันที่ <span class="fill-line"></span> บันทึกข้อมูลโดยผู้ไกล่เกลี่ย <span class="fill-line"></span>"
+            </div>
+          </div>
+
+          <!-- 8. กฎหมายอื่น -->
+          <div class="module-card">
+            <div class="module-title">
+              <span>8. บันทึกให้คำปรึกษากฎหมายทั่วไปและการส่งต่อเรื่องร้องเรียน</span>
+              <span class="tag">คำปรึกษากฎหมาย</span>
+            </div>
+            <div class="script-content">
+              "บันทึกประวัติการให้คำแนะนำทางกฎหมายแก่ประชาชนในวันที่ <span class="fill-line"></span> ประเด็นข้อหารือเรื่อง <span class="fill-line w-long"></span> ได้ทำการช่วยเหลือเบื้องต้นโดย <span class="fill-line w-long"></span> และได้ประสานส่งต่อไปยัง <span class="fill-line"></span> บันทึกข้อมูลโดย <span class="fill-line"></span>"
+            </div>
+          </div>
+
+          <!-- 9. รายงานไม่มีผลงาน -->
+          <div class="module-card">
+            <div class="module-title">
+              <span>9. รายงานส่งความว่างเปล่าประจำรอบเดือน (Zero Report)</span>
+              <span class="tag">รายงาน Zero Report</span>
+            </div>
+            <div class="script-content">
+              "ขอยื่นรายงานไม่มีผลการดำเนินงานหรือกิจกรรมใดๆ ประจำรอบเดือน <span class="fill-line w-short"></span> ปี พ.ศ. <span class="fill-line w-short"></span> เนื่องจากไม่มีคดีไกล่เกลี่ยและกิจกรรมจัดขึ้นภายในศูนย์ รายงานข้อเท็จจริงโดย <span class="fill-line"></span> เบอร์ติดต่อโทรศัพท์ <span class="fill-line"></span>"
+            </div>
+          </div>
+
+          <script>
+            window.onload = function() {
+              window.print();
+              setTimeout(function() { window.close(); }, 500);
+            };
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
 
   const { isListening, startListening, stopListening, isSupported } = useSpeechRecognition({
     onResult: (text, isFinal) => {
@@ -996,7 +1209,15 @@ export default function DashboardPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 border-t border-slate-800 bg-slate-950/40 flex justify-end">
+            <div className="p-4 border-t border-slate-800 bg-slate-950/40 flex justify-between items-center">
+              <button
+                type="button"
+                onClick={handlePrintWorksheet}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold cursor-pointer transition-all flex items-center gap-1.5 shadow-md shadow-emerald-600/10"
+              >
+                <Printer className="h-4 w-4" />
+                <span>🖨️ ดาวน์โหลดใบงานเขียนร่างสคริปต์ (A4)</span>
+              </button>
               <button
                 type="button"
                 onClick={() => setScriptsModalOpen(false)}

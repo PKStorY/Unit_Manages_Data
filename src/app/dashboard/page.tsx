@@ -11,7 +11,7 @@ import {
 import { 
   Calendar, FileText, Compass, BookOpen, Wallet, Shield, AlertTriangle, 
   CheckCircle, Clock, Search, ChevronRight, Filter, TrendingUp, Info,
-  Mic, MicOff, Sparkles, Loader2
+  Mic, MicOff, Sparkles, Loader2, X
 } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
@@ -57,6 +57,8 @@ export default function DashboardPage() {
   // AI Voice & Text integration states
   const [aiStoryText, setAiStoryText] = useState('');
   const [aiParsing, setAiParsing] = useState(false);
+  const [scriptsModalOpen, setScriptsModalOpen] = useState(false);
+  const [activeScriptTab, setActiveScriptTab] = useState('justice_fund');
 
   const { isListening, startListening, stopListening, isSupported } = useSpeechRecognition({
     onResult: (text, isFinal) => {
@@ -738,7 +740,17 @@ export default function DashboardPage() {
 
         {/* Examples section */}
         <div className="mt-4">
-          <p className="text-[10px] text-slate-500 font-medium mb-2 uppercase tracking-wider">💡 แนะนำตัวอย่างการพูดสั่งงาน (กดคลิกเพื่อลองสคริปต์):</p>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">💡 แนะนำตัวอย่างการพูดสั่งงาน (กดคลิกเพื่อลองสคริปต์):</p>
+            <button
+              type="button"
+              onClick={() => setScriptsModalOpen(true)}
+              className="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 transition-all cursor-pointer"
+            >
+              <Info className="h-3.5 w-3.5 animate-pulse" />
+              <span>ดูสคริปต์นำทางคำพูดแบบละเอียด (9 หมวดหมู่)</span>
+            </button>
+          </div>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
@@ -771,6 +783,231 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Voice Scripts Guideline Modal */}
+      {scriptsModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-fadeIn">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+            {/* Modal Header */}
+            <div className="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-950/40">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-indigo-400" />
+                <div>
+                  <h3 className="text-sm font-semibold text-white">💡 คลังสคริปต์คำพูดไกด์ไลน์ (Voice Dictation Guides)</h3>
+                  <p className="text-[10px] text-slate-400 font-light mt-0.5">เลือกหมวดหมู่เพื่อดูสคริปต์ตัวอย่างแนวทางการพูดสำหรับใช้กับ AI Voice Assistant เพื่อให้ได้ผลลัพธ์การสกัดข้อมูลถูกต้อง 100%</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setScriptsModalOpen(false)}
+                className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+              {/* Sidebar Tabs */}
+              <div className="w-full md:w-60 bg-slate-950/30 border-r border-slate-800 p-4 overflow-y-auto space-y-1">
+                <span className="text-[9px] text-slate-500 uppercase tracking-wider font-bold block px-2.5 mb-2">เลือกประเภทรายงาน</span>
+                {[
+                  { id: 'justice_fund', label: 'ขอทุนกองทุนยุติธรรม', desc: 'แบบ กทย.4' },
+                  { id: 'budgets', label: 'ของบประมาณอื่นๆ', desc: 'งบประมาณทั่วไป' },
+                  { id: 'meetings', label: 'การประชุมคณะทำงาน', desc: 'รายงานการประชุม' },
+                  { id: 'plans', label: 'แผนการดำเนินงาน', desc: 'แผนและกิจกรรมย่อย' },
+                  { id: 'activities', label: 'การจัดกิจกรรม', desc: 'รายงานผลกิจกรรม' },
+                  { id: 'trainings', label: 'การอบรมสัมมนา', desc: 'ข้อมูลผู้เข้าอบรม' },
+                  { id: 'ems_reports', label: 'ไกล่เกลี่ย พ.ร.บ. 2562', desc: 'รายงานเคสไกล่เกลี่ย' },
+                  { id: 'other_laws_reports', label: 'การไกล่เกลี่ยกฎหมายอื่น', desc: 'ให้คำแนะนำ/ส่งต่อ' },
+                  { id: 'zero_reports', label: 'รายงานไม่มีผลงาน', desc: 'Zero Report' },
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveScriptTab(tab.id)}
+                    className={`w-full text-left px-3 py-2 rounded-xl text-xs transition-all flex flex-col gap-0.5 ${
+                      activeScriptTab === tab.id 
+                        ? 'bg-indigo-600 text-white font-medium shadow-md shadow-indigo-600/10' 
+                        : 'text-slate-400 hover:bg-slate-850/50 hover:text-white'
+                    }`}
+                  >
+                    <span>{tab.label}</span>
+                    <span className={`text-[9px] ${activeScriptTab === tab.id ? 'text-indigo-200' : 'text-slate-500'}`}>{tab.desc}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Tab Content Display */}
+              <div className="flex-1 p-6 overflow-y-auto space-y-6 text-xs text-slate-300">
+                {/* Script descriptions */}
+                {activeScriptTab === 'justice_fund' && (
+                  <div className="space-y-4">
+                    <div className="border-l-2 border-indigo-500 pl-3">
+                      <span className="text-white font-semibold text-sm">สคริปต์ขอเสนอโครงการ กองทุนยุติธรรม (กทย.4)</span>
+                      <p className="text-[10px] text-slate-500 mt-1">ใช้สำหรับพูดรายละเอียดข้อมูลทั่วไป วัตถุประสงค์ และผู้ประสานงานของศูนย์ในการเสนอขอทุน</p>
+                    </div>
+
+                    <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                      <span className="text-[10px] text-indigo-400 font-bold block">🗣️ บทพูดแนะนำที่ควรอ่านออกเสียง:</span>
+                      <p className="leading-relaxed font-light text-slate-200">
+                        "เสนอโครงการ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ชื่อโครงการเต็มของคุณ</span> เสนอโดยประธานศูนย์ไกล่เกลี่ย <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ชื่อประธานศูนย์</span> ที่ตั้งสำนักงานอยู่ที่ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ระบุที่อยู่เลขที่ ถนน ตำบล อำเภอ จังหวัด</span> มีผู้ประสานงานหลักคือ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ชื่อผู้ประสานงาน</span> โทรศัพท์ติดต่อ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">เบอร์โทรศัพท์</span> อีเมล <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">อีเมลผู้ติดต่อ</span> วัตถุประสงค์เพื่อส่งเสริมการเข้าถึงกระบวนการยุติธรรมและสร้างความรู้กฎหมายแก่ประชาชนในพื้นที่ จัดอบรมในวันที่ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">วันที่เริ่มต้นจัด เช่น 15 สิงหาคม 2569</span> สิ้นสุดวันที่ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">วันที่เสร็จสิ้น</span> และดำเนินการประชุมเห็นชอบของคณะทำงานเมื่อวันที่ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">วันที่จัดประชุมเห็นชอบ</span>"
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <span className="text-[10px] text-slate-400 font-bold block">💡 เคล็ดลับเพิ่มเติม:</span>
+                      <ul className="list-disc pl-4 space-y-1 text-slate-400 font-light leading-relaxed">
+                        <li>ระบุวันที่เป็น ค.ศ. หรือ พ.ศ. ให้ชัดเจน เช่น "วันที่ 12 สิงหาคม 2569" เพื่อให้ AI แปลงรูปแบบได้แม่นยำ</li>
+                        <li>ชื่อศูนย์และประธานศูนย์จะถูกอ้างอิงไปใช้ในการจัดทำหนังสือรับรองประธาน และรายงานการประชุมโดยอัตโนมัติ</li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
+                {activeScriptTab === 'budgets' && (
+                  <div className="space-y-4">
+                    <div className="border-l-2 border-indigo-500 pl-3">
+                      <span className="text-white font-semibold text-sm">สคริปต์ขออนุมัติเบิกจ่ายงบประมาณอื่นๆ</span>
+                      <p className="text-[10px] text-slate-500 mt-1">ใช้สำหรับการรายงานการขออนุมัติเงินโครงการหรืองบประมาณเบิกจ่ายทั่วไปที่ไม่ใช่เงินกองทุน</p>
+                    </div>
+
+                    <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                      <span className="text-[10px] text-indigo-400 font-bold block">🗣️ บทพูดแนะนำที่ควรอ่านออกเสียง:</span>
+                      <p className="leading-relaxed font-light text-slate-200">
+                        "ขอเบิกจ่ายงบประมาณโครงการ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ชื่อโครงการ</span> ได้รับอนุมัติงบประมาณจำนวน <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ยอดเงินอนุมัติ เช่น 35000</span> บาท วันที่ได้รับการอนุมัติเบิกจ่ายคือวันที่ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">วันที่อนุมัติ</span> และจัดโครงการเสร็จสิ้นวันที่ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">วันที่จัดเสร็จ</span> โดยมีเงินงบประมาณส่งคืนจำนวน <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">เงินทอนคลัง เช่น 1500</span> บาท รายงานโดย <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ผู้รายงาน</span> โทรศัพท์ติดต่อ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">เบอร์ติดต่อ</span>"
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {activeScriptTab === 'meetings' && (
+                  <div className="space-y-4">
+                    <div className="border-l-2 border-indigo-500 pl-3">
+                      <span className="text-white font-semibold text-sm">สคริปต์จดรายงานการประชุมคณะทำงาน</span>
+                      <p className="text-[10px] text-slate-500 mt-1">ใช้สำหรับการจดบันทึกประเด็นและมติที่ประชุมในแต่ละคณะทำงานประจำพื้นที่</p>
+                    </div>
+
+                    <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                      <span className="text-[10px] text-indigo-400 font-bold block">🗣️ บทพูดแนะนำที่ควรอ่านออกเสียง:</span>
+                      <p className="leading-relaxed font-light text-slate-200">
+                        "รายงานการประชุมคณะทำงานประจำปี ครั้งที่ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">1/2569</span> จัดประชุมเมื่อวันที่ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">วันที่จัด</span> ณ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">สถานที่จัด</span> โดยมีมติที่ประชุมเห็นชอบใน <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">สรุปมติเห็นชอบโครงการ</span> บันทึกรายงานโดย <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ชื่อของคุณ</span> โทรศัพท์ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">เบอร์โทร</span>"
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {activeScriptTab === 'plans' && (
+                  <div className="space-y-4">
+                    <div className="border-l-2 border-indigo-500 pl-3">
+                      <span className="text-white font-semibold text-sm">สคริปต์แผนการดำเนินงานประจำปี</span>
+                      <p className="text-[10px] text-slate-500 mt-1">ใช้สำหรับการระบุโครงร่างแผนงานภาพใหญ่ตลอดปีพร้อมกิจกรรมย่อย</p>
+                    </div>
+
+                    <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                      <span className="text-[10px] text-indigo-400 font-bold block">🗣️ บทพูดแนะนำที่ควรอ่านออกเสียง:</span>
+                      <p className="leading-relaxed font-light text-slate-200">
+                        "รายงานแผนงานโครงการหลักชื่อ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ชื่อโครงการหลัก</span> ปีงบประมาณ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">2569</span> บันทึกโดย <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ชื่อของคุณ</span> โทร <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">เบอร์ติดต่อ</span> มีกิจกรรมย่อยคือ กิจกรรม <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ชื่อกิจกรรมย่อย</span> เริ่มวันที่ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">วันที่จัด</span> ถึงวันที่ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">วันที่เสร็จ</span> งบประมาณย่อย <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">งบประมาณ</span>"
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {activeScriptTab === 'activities' && (
+                  <div className="space-y-4">
+                    <div className="border-l-2 border-indigo-500 pl-3">
+                      <span className="text-white font-semibold text-sm">สคริปต์รายงานผลกิจกรรมชุมชน</span>
+                      <p className="text-[10px] text-slate-500 mt-1">ใช้สำหรับรายงานเมื่อศูนย์ดำเนินกิจกรรมลงพื้นที่เสร็จสิ้นแล้ว</p>
+                    </div>
+
+                    <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                      <span className="text-[10px] text-indigo-400 font-bold block">🗣️ บทพูดแนะนำที่ควรอ่านออกเสียง:</span>
+                      <p className="leading-relaxed font-light text-slate-200">
+                        "รายงานการจัดกิจกรรม <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ชื่อกิจกรรม</span> วันที่ดำเนินกิจกรรมคือวันที่ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">วันที่จัด</span> สถานที่คือ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">สถานที่จัดกิจกรรม</span> มีผลสรุปคือ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">สรุปผลการจัดกิจกรรม</span> บันทึกโดย <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ชื่อผู้รายงาน</span>"
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {activeScriptTab === 'trainings' && (
+                  <div className="space-y-4">
+                    <div className="border-l-2 border-indigo-500 pl-3">
+                      <span className="text-white font-semibold text-sm">สคริปต์บันทึกรายงานการอบรมสัมมนา</span>
+                      <p className="text-[10px] text-slate-500 mt-1">ใช้รายงานประวัติความรู้ของผู้เข้าอบรมในหลักสูตรทางวิชาการ</p>
+                    </div>
+
+                    <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                      <span className="text-[10px] text-indigo-400 font-bold block">🗣️ บทพูดแนะนำที่ควรอ่านออกเสียง:</span>
+                      <p className="leading-relaxed font-light text-slate-200">
+                        "รายงานอบรมแบบ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ออนไลน์ หรือ ออนไซต์</span> หลักสูตร <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ชื่อหลักสูตร</span> อบรมในวันที่ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">วันที่เริ่มอบรม</span> ผู้เข้ารับการอบรมคือ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ชื่อผู้เข้าอบรม</span> ดำเนินงานจัดโดยหน่วยงาน <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">หน่วยงานผู้จัด</span> รายงานโดย <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ชื่อของคุณ</span>"
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {activeScriptTab === 'ems_reports' && (
+                  <div className="space-y-4">
+                    <div className="border-l-2 border-indigo-500 pl-3">
+                      <span className="text-white font-semibold text-sm">สคริปต์รายงานเคสไกล่เกลี่ยตาม พ.ร.บ. 2562</span>
+                      <p className="text-[10px] text-slate-500 mt-1">ใช้บันทึกประวัติการเจรจาคดีความไกล่เกลี่ยทางการประจำศูนย์</p>
+                    </div>
+
+                    <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                      <span className="text-[10px] text-indigo-400 font-bold block">🗣️ บทพูดแนะนำที่ควรอ่านออกเสียง:</span>
+                      <p className="leading-relaxed font-light text-slate-200">
+                        "รายงานคดีไกล่เกลี่ยคดีเลขที่ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">เลขคดี เช่น กก.15/2569</span> วันที่รับเรื่องคือวันที่ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">วันที่รับคำร้อง</span> เป็นข้อพิพาททาง <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">แพ่ง หรือ อาญา</span> คดีเกี่ยวเนื่องกับ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ประเภทคดี เช่น ละเมิด/กู้ยืม</span> ทุนทรัพย์ไกล่เกลี่ยจำนวน <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ทุนทรัพย์เป็นตัวเลข</span> ผลการไกล่เกลี่ยคือ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ตกลงกันได้ หรือ ตกลงกันไม่ได้</span> บันทึกโดย <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ผู้ไกล่เกลี่ย</span>"
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {activeScriptTab === 'other_laws_reports' && (
+                  <div className="space-y-4">
+                    <div className="border-l-2 border-indigo-500 pl-3">
+                      <span className="text-white font-semibold text-sm">สคริปต์รายงานให้คำปรึกษาทางกฎหมาย/ส่งต่อ</span>
+                      <p className="text-[10px] text-slate-500 mt-1">ใช้รายงานผลการให้คำแนะนำกฎหมายเบื้องต้นแก่ประชาชน</p>
+                    </div>
+
+                    <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                      <span className="text-[10px] text-indigo-400 font-bold block">🗣️ บทพูดแนะนำที่ควรอ่านออกเสียง:</span>
+                      <p className="leading-relaxed font-light text-slate-200">
+                        "รายงานเคสให้คำปรึกษากฎหมาย วันที่บันทึกรายงานคือวันที่ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">วันที่รับคำแนะนำ</span> ปัญหาเกี่ยวกับเรื่อง <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">รายละเอียดปัญหา</span> ได้ดำเนินการ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ให้ข้อแนะนำ หรือ ประสานส่งต่อ</span> หน่วยงานปลายทางคือ <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">เช่น สำนักงานยุติธรรมจังหวัด</span> บันทึกโดย <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ชื่อของคุณ</span>"
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {activeScriptTab === 'zero_reports' && (
+                  <div className="space-y-4">
+                    <div className="border-l-2 border-indigo-500 pl-3">
+                      <span className="text-white font-semibold text-sm">สคริปต์รายงานไม่มีผลการดำเนินงาน (Zero Report)</span>
+                      <p className="text-[10px] text-slate-500 mt-1">ใช้ส่งรายงานความว่างเปล่าประจำรอบเดือนอย่างรวดเร็ว</p>
+                    </div>
+
+                    <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                      <span className="text-[10px] text-indigo-400 font-bold block">🗣️ บทพูดแนะนำที่ควรอ่านออกเสียง:</span>
+                      <p className="leading-relaxed font-light text-slate-200">
+                        "รายงานไม่มีผลการดำเนินงานประจำเดือน <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ระบุเลขเดือน เช่น 6 หรือ 10</span> ปีพ.ศ. <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">2569</span> เนื่องจากไม่มีกิจกรรมไกล่เกลี่ยเกิดขึ้นภายในศูนย์ รายงานข้อมูลโดย <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">ชื่อผู้ประสานงานหลัก</span> โทร <span className="bg-indigo-900/30 text-indigo-300 px-1 py-0.5 rounded font-mono">เบอร์โทรศัพท์</span>"
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-slate-800 bg-slate-950/40 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setScriptsModalOpen(false)}
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-semibold cursor-pointer transition-all"
+              >
+                ปิดหน้าต่างคำแนะนำ
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -166,6 +166,198 @@ export default function JusticeFundPage() {
     }
   };
 
+  const handlePrintDocument = () => {
+    const printContent = document.getElementById('print-document-content')?.innerHTML;
+    if (!printContent) return;
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const docTitles: Record<string, string> = {
+      kth4: 'แบบคำขอรับความช่วยเหลือเงินกองทุนยุติธรรม (กทย.4)',
+      proposal: 'รายละเอียดเสนอโครงการ 9 ข้อ',
+      schedule: 'ตารางกำหนดการอบรม',
+      expenses: 'ประมาณการค่าใช้จ่ายย่อย',
+      cert: 'หนังสือรับรองการไม่ซ้ำซ้อนงบประมาณ',
+      minutes: 'รายงานการประชุมคณะทำงาน',
+      refs: 'หนังสือรับรองผลงาน'
+    };
+    const title = docTitles[activePrintDoc] || 'เอกสารราชการ';
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>${title}</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap');
+            body {
+              font-family: 'Sarabun', sans-serif;
+              padding: 40px;
+              color: #1e293b;
+              line-height: 1.8;
+              font-size: 14px;
+              background-color: #fff;
+            }
+            .no-print {
+              display: none !important;
+            }
+            h2, h3, h4 {
+              color: #0f172a;
+              margin-top: 0;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin: 15px 0;
+              font-size: 13px;
+            }
+            th, td {
+              border: 1px solid #cbd5e1;
+              padding: 8px 10px;
+              text-align: left;
+            }
+            th {
+              background-color: #f1f5f9;
+              font-weight: 600;
+            }
+            .text-center {
+              text-align: center;
+            }
+            .text-right {
+              text-align: right;
+            }
+            .font-bold {
+              font-weight: 700;
+            }
+            .border-b {
+              border-bottom: 1px solid #cbd5e1;
+            }
+            .pb-1 {
+              padding-bottom: 4px;
+            }
+            .pb-4 {
+              padding-bottom: 16px;
+            }
+            .pt-10 {
+              padding-top: 40px;
+            }
+            .pt-16 {
+              padding-top: 64px;
+            }
+            .pt-6 {
+              padding-top: 24px;
+            }
+            .pt-8 {
+              padding-top: 32px;
+            }
+            .mt-1 {
+              margin-top: 4px;
+            }
+            .mt-4 {
+              margin-top: 16px;
+            }
+            .p-2 {
+              padding: 8px;
+            }
+            .bg-slate-50 {
+              background-color: #f8fafc;
+            }
+            .rounded {
+              border-radius: 6px;
+            }
+            .border {
+              border: 1px solid #e2e8f0;
+            }
+            .grid {
+              display: grid;
+            }
+            .grid-cols-12 {
+              grid-template-columns: repeat(12, minmax(0, 1fr));
+            }
+            .col-span-12 {
+              grid-column: span 12 / span 12;
+            }
+            .col-span-6 {
+              grid-column: span 6 / span 6;
+            }
+            .col-span-4 {
+              grid-column: span 4 / span 4;
+            }
+            .col-span-8 {
+              grid-column: span 8 / span 8;
+            }
+            .gap-2 {
+              gap: 8px;
+            }
+            .gap-4 {
+              gap: 16px;
+            }
+            .space-y-1 > * + * {
+              margin-top: 4px;
+            }
+            .space-y-4 > * + * {
+              margin-top: 16px;
+            }
+            .space-y-6 > * + * {
+              margin-top: 24px;
+            }
+            .leading-loose {
+              line-height: 2;
+            }
+            .font-sans {
+              font-family: 'Sarabun', sans-serif;
+            }
+            .flex {
+              display: flex;
+            }
+            .justify-end {
+              justify-content: flex-end;
+            }
+            .w-\\[300px\\] {
+              width: 300px;
+            }
+            .space-y-8 > * + * {
+              margin-top: 32px;
+            }
+            .max-w-3xl {
+              max-w: 768px;
+            }
+            .mx-auto {
+              margin-left: auto;
+              margin-right: auto;
+            }
+            .py-6 {
+              padding-top: 24px;
+              padding-bottom: 24px;
+            }
+            .text-slate-500 {
+              color: #64748b;
+            }
+            .text-slate-700 {
+              color: #334155;
+            }
+            @media print {
+              body {
+                padding: 0;
+                margin: 20mm 15mm 20mm 15mm;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          ${printContent}
+          <script>
+            window.onload = function() {
+              window.print();
+              setTimeout(function() { window.close(); }, 500);
+            };
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
   useEffect(() => {
     fetchApplications();
   }, [user, profile]);
@@ -1008,11 +1200,11 @@ export default function JusticeFundPage() {
           {/* Print Options Buttons (Hidden during prints) */}
           <div className="absolute top-4 right-4 flex gap-2 no-print">
             <button
-              onClick={() => window.print()}
+              onClick={handlePrintDocument}
               className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg shadow-md cursor-pointer"
             >
               <Printer className="h-4 w-4" />
-              <span>สั่งพิมพ์ / บันทึก PDF</span>
+              <span>ดาวน์โหลด PDF / สั่งพิมพ์</span>
             </button>
             <button
               onClick={() => setView('form')}
@@ -1022,6 +1214,8 @@ export default function JusticeFundPage() {
               <span>ย้อนกลับ</span>
             </button>
           </div>
+
+          <div id="print-document-content">
 
           {/* DOCUMENT 1: KTH4 (แบบ กทย.4) */}
           {activePrintDoc === 'kth4' && (
@@ -1326,6 +1520,7 @@ export default function JusticeFundPage() {
               </div>
             </div>
           )}
+          </div>
 
         </div>
       )}
